@@ -32,6 +32,11 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
+
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/user", userRoutes);
