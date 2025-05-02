@@ -6,7 +6,10 @@
         env_file:
           - ./server/.env
         environment:
-          - PORT=${PORT:-5000}
+          - MONGODB_URI=mongodb+srv://codingrambhrose:ratvamar7123@cluster0.g46pb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+          - JWT_SECRET=e8f1c9d6b8a74e3f9d5c20a1e6fba3e0d4a1b2c3d5f6a7b8c9e0d1f2a3b4c5d6
+          - GOOGLE_API_KEY=AIzaSyCST0lLX3ZceJOGXRVu0RLAbAaoo4iTz8Y
+          - OPENAI_API_KEY=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
       frontend:
         build: ./client
         ports:
