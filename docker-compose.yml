@@ -1,20 +1,66 @@
-    services:
-      backend:
-        build: ./server
-        ports:
-          - "5000:5000"
-        env_file:
-          - ./server/.env
-        environment:
-          - PORT=${PORT:-5000}
-      frontend:
-        build: ./client
-        ports:
-          - "3000:80"
-        depends_on:
-          - backend
+services:
+  # Your existing services (unchanged)
+  backend:
+    build: ./server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    environment:
+      - PORT=${PORT:-5000}
+    networks:
+      - app-network
 
+  frontend:
+    build: ./client
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
 
+  # ===== Add Monitoring Services =====
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - app-network
 
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3001:3000"  # Different port to avoid conflict with frontend
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - app-network
+    depends_on:
+      - prometheus
 
-          
+  node_exporter:
+    image: prom/node-exporter
+    container_name: node_exporter  # Explicit name
+    hostname: node_exporter       # Add hostname
+    networks:
+      - app-network
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/root:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/host/root'
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  grafana-storage:
