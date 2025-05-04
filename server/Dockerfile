@@ -2,20 +2,18 @@ FROM node:22-alpine as dev
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
+# Add prom-client explicitly
+RUN npm install prom-client
 COPY . .
-CMD [ "npm", "start" ]
+EXPOSE 5000
+CMD [ "npx", "nodemon", "index.js" ]
 
-
-FROM node:22-alpine as build
+FROM node:22-alpine as prod
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
+# Add prom-client explicitly
+RUN npm install prom-client
 COPY . .
-RUN npm run build
-
-
-FROM nginx:alpine as prod
-COPY --from=build /app/build /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 5000
+CMD [ "node", "index.js" ]
