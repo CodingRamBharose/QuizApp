@@ -55,9 +55,6 @@ mongoose
 
 // Routes
 
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
 
 app.get('/metrics', async (req, res) => {
   res.set('Content-Type', prometheus.register.contentType);
@@ -69,14 +66,16 @@ app.use("/api/quiz", quizRoutes);
 app.use("/api/user", userRoutes);
 
 // Serve static assets in production
-if (process.env.NODE_ENV === "production") {
-  // Set static folder
-  app.use(express.static(path.join(__dirname, "../client/build")));
+// if (process.env.NODE_ENV === "production") {
+//   // Set static folder
+//   app.use(express.static(path.join(__dirname, "../client/build")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../client", "build", "index.html"));
-  });
-}
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "../client", "build", "index.html"));
+//   });
+// }
+
+const _dirname = path.resolve();
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -86,6 +85,12 @@ app.use((err, req, res, next) => {
     error: err.message || "Server Error",
   });
 });
+
+app.use(express.static(path.join(_dirname, "/client/build")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(_dirname, "client", "build", "index.html"));
+});
+
 
 // Start server
 app.listen(PORT, () => {
