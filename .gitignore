@@ -5,7 +5,13 @@ node_modules/
 logs/
 *.log
 
+
+docker-compose*.yml
+
 # Environment variables
+.env
+.env.local
+.env.development.local
 
 # OS files
 .DS_Store
